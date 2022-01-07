@@ -196,20 +196,27 @@ export default {
         },
         createUser() {
             this.$Progress.start();
-            this.form.post("api/user");
+            this.form
+                .post("api/user")
+                .then(() => {
+                    this.$emit("AfterCreate");
+                    // $("#addNew").modal("hide");
 
-            // $("#addNew").modal("hide");
+                    Toast.fire({
+                        icon: "success",
+                        title: "User created successfully",
+                    });
 
-            Toast.fire({
-                icon: "success",
-                title: "User created successfully",
-            });
-
-            this.$Progress.finish();
+                    this.$Progress.finish();
+                })
+                .catch(() => {});
         },
     },
     created() {
         this.loadUsers();
+        this.$on("AfterCreate", () => {
+            this.loadUsers();
+        });
     },
 };
 </script>

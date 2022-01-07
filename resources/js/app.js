@@ -8,7 +8,26 @@ Alpine.start();
 
 window.Vue = require("vue").default;
 import moment from "moment";
-import { Form, Errors } from "vform";
+
+import Form from "vform";
+window.Form = Form;
+import {
+    Button,
+    HasError,
+    AlertError,
+    AlertErrors,
+    AlertSuccess,
+} from "vform/src/components/bootstrap5";
+// 'vform/src/components/bootstrap4'
+// 'vform/src/components/tailwind'
+
+Vue.component(Button.name, Button);
+Vue.component(HasError.name, HasError);
+Vue.component(AlertError.name, AlertError);
+Vue.component(AlertErrors.name, AlertErrors);
+Vue.component(AlertSuccess.name, AlertSuccess);
+
+// import { Form, HasError, AlertError } from "vform";
 
 // SweetAlert
 
@@ -54,7 +73,7 @@ Vue.use(VueProgressBar, {
 
 // ===========
 
-window.Form = Form;
+// window.Form = Form;
 // Vue.component(HasError.name, HasError);
 // Vue.component(AlertError.name, AlertError);
 
@@ -85,6 +104,8 @@ const router = new VueRouter({
     mode: "history",
 });
 
+// componenta
+
 Vue.component(
     "example-component",
     require("./components/ExampleComponent.vue").default
@@ -94,6 +115,8 @@ const app = new Vue({
     el: "#app",
     router,
 });
+
+// Filtre
 
 Vue.filter("upText", function (text) {
     return text.charAt(0).toUpperCase() + text.slice(1);
@@ -105,3 +128,6 @@ Vue.filter("myDate", function (created) {
 // import VeeValidate from "vee-validate";
 
 // Vue.use(VeeValidate);
+
+// http request
+window.Fire = new Vue();
