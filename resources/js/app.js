@@ -131,3 +131,13 @@ Vue.filter("myDate", function (created) {
 
 // http request
 window.Fire = new Vue();
+
+// https://getbootstrap.com/docs/5.1/components/modal/
+
+// var myModal = document.getElementById('myModal')
+
+// myModal.addEventListener('show.bs.modal', function (event) {
+//   if (!data) {
+//     return event.preventDefault() // stops modal from being shown
+//   }
+// });

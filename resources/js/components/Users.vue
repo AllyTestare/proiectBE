@@ -37,11 +37,11 @@
                                     <td>{{ user.created_at | myDate }}</td>
 
                                     <td>
-                                        <a href="#">
+                                        <a href="#" @click="editModal(user)">
                                             <i class="fa fa-edit yellow"></i>
                                         </a>
                                         |
-                                        <a href="#">
+                                        <a href="#" @click="deleteUser(user.id)">
                                             <i class="fa fa-trash red"></i>
                                         </a>
                                     </td>
@@ -59,21 +59,24 @@
             class="modal fade"
             id="addNew"
             tabindex="-1"
+            role="dialog"
             aria-labelledby="addNewLabel"
             aria-hidden="true"
         >
-            <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="addNewLabel">Add New</h5>
+                        <h5 class="modal-title" v-show="!editmode" id="addNewLabel">Add New</h5>
+                         <h5 class="modal-title" v-show="editmode" id="addNewLabel">Update User's Info</h5>
                         <button
                             type="button"
                             class="btn-close"
                             data-bs-dismiss="modal"
-                            aria-label="Close"
-                        ></button>
+                            aria-label="Close">
+                             <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                    <form @submit.prevent="createUser">
+                    <form @submit.prevent="editmode ? updateUser() : createUser()">
                         <div class="modal-body">
                             <!-- Campuri add user -->
                             <!-- Name -->
@@ -157,16 +160,9 @@
                         </div>
 
                         <div class="modal-footer" bg-black>
-                            <button
-                                type="button"
-                                class="btn btn-danger"
-                                data-bs-dismiss="modal"
-                            >
-                                Close
-                            </button>
-                            <button type="submit" class="btn btn-primary">
-                                Create
-                            </button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <button v-show="editmode" type="submit" class="btn btn-success">Update</button>
+                    <button v-show="!editmode" type="submit" class="btn btn-primary">Create</button>
                         </div>
                     </form>
                 </div>
@@ -176,11 +172,14 @@
 </template>
 
 <script>
+
 export default {
     data() {
         return {
+            editmode: false,
             users: {},
             form: new Form({
+                  id:"",
                 name: "",
                 email: "",
                 password: "",
@@ -191,6 +190,46 @@ export default {
         };
     },
     methods: {
+        editModal(user){
+            this.editmode = true;
+            this.form.reset();
+             $('#addNew').modal('show');
+            this.form.fill(user);
+        },
+        newModal(){
+            this.editmode = false;
+            this.form.reset();
+            $('#addNew').modal('show');
+        },
+            deleteUser(id){
+                Swal.fire({
+  title: 'Are you sure?',
+  text: "You won't be able to revert this!",
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonColor: '#3085d6',
+  cancelButtonColor: '#d33',
+  confirmButtonText: 'Yes, delete it!'
+}).then((result) => {
+// send request to the server
+if (result.isConfirmed) {
+    
+    this.form.delete('/api/user/'+id).then(()=>{
+       Swal.fire(
+      'Deleted!',
+      'Your file has been deleted.',
+      'success'
+     )
+     this.$emit("AfterCreate");
+     }).catch(()=>{
+swal("Failed", "There was something wrong.", "warning");
+       });
+  
+    }
+})
+            },
+
+
         loadUsers() {
             axios.get("api/user").then(({ data }) => (this.users = data));
         },
@@ -200,7 +239,7 @@ export default {
                 .post("api/user")
                 .then(() => {
                     this.$emit("AfterCreate");
-                    // $("#addNew").modal("hide");
+                    addNew.hide();
 
                     Toast.fire({
                         icon: "success",
